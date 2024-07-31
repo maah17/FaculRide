@@ -1,0 +1,22 @@
+{
+  "name": "faculride-npm",
+  "version": "1.0.0",
+  "description": "Projeto da faculdade voltado a mobilidade estudantil",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maah17/FaculRide.git"
+  },
+  "author": "os melhores da engenharia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maah17/FaculRide/issues"
+  },
+  "homepage": "https://github.com/maah17/FaculRide#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
