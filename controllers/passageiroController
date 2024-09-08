@@ -35,12 +35,20 @@ module.exports = {
         const { nome } = req.body;
 
         try {
-            if (telefone_antigo && telefone) {
+            if (telefone_antigo && telefone && nome_antigo && nome) {
                 await TelefonePassageiroAtt.atualizarTelefone(telefone, telefone_antigo, res)
+                await NomePassageiroAtt.atualizarNome(nome, nome_antigo, res)
+                res.status(200).send(`Passageiro com nome ${nome} e telefone ${telefone} atualizado com sucesso.`);
+                return;
+
+            } else if (telefone_antigo && telefone) {
+                await TelefonePassageiroAtt.atualizarTelefone(telefone, telefone_antigo, res)
+                res.status(200).send(`Passageiro com nome ${telefone} atualizado com sucesso.`);
                 return;
 
             } else if (nome_antigo && nome) {
                 await NomePassageiroAtt.atualizarNome(nome, nome_antigo, res)
+                res.status(200).send(`Passageiro com nome ${nome} atualizado com sucesso.`);
                 return;
             }
             res.status(400).send('Nenhum dado válido para atualizar');
