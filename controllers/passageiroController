@@ -1,0 +1,65 @@
+const getPassageiro = require('../models/passageiro/consulta')
+const cadastrarPassageiro = require('../models/passageiro/criar')
+const TelefonePassageiroAtt = require('../models/passageiro/atualizarTelefone')
+const NomePassageiroAtt = require('../models/passageiro/atualizarNome')
+const deletePassageiro = require('../models/passageiro/deletar')
+
+
+module.exports = {
+    listar: async function (req, res) {
+        getPassageiro.listarPassageiros()
+            .then(function (passageiros) {
+                res.json(passageiros)
+            }).catch(function (erro) {
+                console.error('Erro ao listar passageiro:', erro);
+                res.send(erro)
+            })
+    },
+
+    criar: function (req, res) {
+        const { cpf, nome, telefone, email, senha } = req.body;
+
+        cadastrarPassageiro.criarPassageiro(cpf, nome, telefone, email, senha)
+            .then(function () {
+                res.send('passageiro cadastrado')
+            }).catch(function (erro) {
+                console.error('Erro ao cadastrar passageiro:', erro);
+                res.status(500).send('Erro ao cadastrar passageiro');
+            })
+    },
+
+    atualizar: async function (req, res) {
+        const { telefone_antigo } = req.body;
+        const { telefone } = req.body;
+        const { nome_antigo } = req.body;
+        const { nome } = req.body;
+
+        try {
+            if (telefone_antigo && telefone) {
+                await TelefonePassageiroAtt.atualizarTelefone(telefone, telefone_antigo, res)
+                return;
+
+            } else if (nome_antigo && nome) {
+                await NomePassageiroAtt.atualizarNome(nome, nome_antigo, res)
+                return;
+            }
+            res.status(400).send('Nenhum dado válido para atualizar');
+        }
+        catch (err) {
+            console.error('Erro ao atualizar o passageiro:', err);
+            res.status(500).send('Erro ao atualizar o passageiro.');
+        }
+
+    },
+
+
+    deletar: function (req, res) {
+        deletePassageiro.deletarPassageiro(req.params.id)
+            .then(function () {
+                res.send('passageiro deletado')
+            }).catch(function (erro) {
+                console.error('Erro ao deletar passageiro:', erro);
+                res.send(erro)
+            })
+    },
+};
