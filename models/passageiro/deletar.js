@@ -3,7 +3,7 @@ const db = require('../../db/cnx')
 const deletarPassageiro = async function (idPassageiro) {
     const client = await db.connect()
     try {
-        const dados = "DELETE FROM cadastro_passageiro WHERE id_passageiro = $1;"
+        const dados = "DELETE FROM passageiro WHERE id_passageiros = $1;"
         await client.query(dados, [idPassageiro]);
         console.log(`Passageiro com ID ${idPassageiro} deletado com sucesso.`);
     } catch (err) {

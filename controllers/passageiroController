@@ -17,9 +17,9 @@ module.exports = {
     },
 
     criar: function (req, res) {
-        const { cpf, nome, telefone, email, senha } = req.body;
+        const { nome_passageiro, cpf_passageiro, email_passageiro, rua_passageiro, cidade_passageiro, bairro_passageiro, uf_passageiro, senha_passageiro, telefone_passageiro } = req.body;
 
-        cadastrarPassageiro.criarPassageiro(cpf, nome, telefone, email, senha)
+        cadastrarPassageiro.criarPassageiro(nome_passageiro, cpf_passageiro, email_passageiro, rua_passageiro, cidade_passageiro, bairro_passageiro, uf_passageiro, senha_passageiro, telefone_passageiro)
             .then(function () {
                 res.send('passageiro cadastrado')
             }).catch(function (erro) {

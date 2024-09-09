@@ -5,7 +5,7 @@ const poll = new Pool({
     password: 'postgres',
     host: 'localhost',
     port: 5432,
-    database: 'dbFaculRide'
+    database: 'dbFaculRideCerto'
 })
 
 module.exports = poll
