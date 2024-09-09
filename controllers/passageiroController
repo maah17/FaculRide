@@ -3,7 +3,25 @@ const cadastrarPassageiro = require('../models/passageiro/criar')
 const TelefonePassageiroAtt = require('../models/passageiro/atualizarTelefone')
 const NomePassageiroAtt = require('../models/passageiro/atualizarNome')
 const deletePassageiro = require('../models/passageiro/deletar')
+const Joi = require('joi')
+const passageiroSchema = Joi.object({
+    nome_passageiro: Joi.string().max(45).required(),
+    cpf_passageiro: Joi.string().max(14).required(),
+    email_passageiro: Joi.string().max(50).required(),
+    rua_passageiro: Joi.string().max(50).required(),
+    cidade_passageiro: Joi.string().max(50).required(),
+    bairro_passageiro: Joi.string().max(50).required(),
+    uf_passageiro: Joi.string().max(2).required(),
+    senha_passageiro: Joi.string().max(50).required(),
+    telefone_passageiro: Joi.string().max(20).required()
+})
 
+const passageiroUpdate = Joi.object({
+    telefone_antigo: Joi.string(),
+    telefone: Joi.string().max(20),
+    nome_antigo: Joi.string(),
+    nome: Joi.string().max(45)
+})
 
 module.exports = {
     listar: async function (req, res) {
@@ -17,47 +35,59 @@ module.exports = {
     },
 
     criar: function (req, res) {
-        const { nome_passageiro, cpf_passageiro, email_passageiro, rua_passageiro, cidade_passageiro, bairro_passageiro, uf_passageiro, senha_passageiro, telefone_passageiro } = req.body;
+        const { error } = passageiroSchema.validate(req.body)
+        if (error) {
+            console.error('Erro de validação:', error.details);
+            return res.status(400).send(`Dados inválidos: ${error.details.map(e => e.message).join(', ')}`);
+        } else {
+            const { nome_passageiro, cpf_passageiro, email_passageiro, rua_passageiro, cidade_passageiro, bairro_passageiro, uf_passageiro, senha_passageiro, telefone_passageiro } = req.body;
 
-        cadastrarPassageiro.criarPassageiro(nome_passageiro, cpf_passageiro, email_passageiro, rua_passageiro, cidade_passageiro, bairro_passageiro, uf_passageiro, senha_passageiro, telefone_passageiro)
-            .then(function () {
-                res.send('passageiro cadastrado')
-            }).catch(function (erro) {
-                console.error('Erro ao cadastrar passageiro:', erro);
-                res.status(500).send('Erro ao cadastrar passageiro');
-            })
+            cadastrarPassageiro.criarPassageiro(nome_passageiro, cpf_passageiro, email_passageiro, rua_passageiro, cidade_passageiro, bairro_passageiro, uf_passageiro, senha_passageiro, telefone_passageiro)
+
+                .then(function () {
+                    res.send('passageiro cadastrado')
+                }).catch(function (erro) {
+                    console.error('Erro ao cadastrar passageiro:', erro);
+                    res.status(500).send('Erro ao cadastrar passageiro');
+                })
+        }
     },
 
     atualizar: async function (req, res) {
-        const { telefone_antigo } = req.body;
-        const { telefone } = req.body;
-        const { nome_antigo } = req.body;
-        const { nome } = req.body;
+        const { error } = passageiroUpdate.validate(req.body)
+        if (error) {
+            console.error('Erro de validação:', error.details);
+            return res.status(400).send(`Dados inválidos: ${error.details.map(e => e.message).join(', ')}`);
+        } else {
+            const { telefone_antigo } = req.body;
+            const { telefone } = req.body;
+            const { nome_antigo } = req.body;
+            const { nome } = req.body;
 
-        try {
-            if (telefone_antigo && telefone && nome_antigo && nome) {
-                await TelefonePassageiroAtt.atualizarTelefone(telefone, telefone_antigo, res)
-                await NomePassageiroAtt.atualizarNome(nome, nome_antigo, res)
-                res.status(200).send(`Passageiro com nome ${nome} e telefone ${telefone} atualizado com sucesso.`);
-                return;
+            try {
+                if (telefone_antigo && telefone && nome_antigo && nome) {
+                    await TelefonePassageiroAtt.atualizarTelefone(telefone, telefone_antigo, res)
+                    await NomePassageiroAtt.atualizarNome(nome, nome_antigo, res)
+                    res.status(200).send(`Passageiro com nome ${nome} e telefone ${telefone} atualizado com sucesso.`);
+                    return;
 
-            } else if (telefone_antigo && telefone) {
-                await TelefonePassageiroAtt.atualizarTelefone(telefone, telefone_antigo, res)
-                res.status(200).send(`Passageiro com nome ${telefone} atualizado com sucesso.`);
-                return;
+                } else if (telefone_antigo && telefone) {
+                    await TelefonePassageiroAtt.atualizarTelefone(telefone, telefone_antigo, res)
+                    res.status(200).send(`Passageiro com telefone ${telefone} atualizado com sucesso.`);
+                    return;
 
-            } else if (nome_antigo && nome) {
-                await NomePassageiroAtt.atualizarNome(nome, nome_antigo, res)
-                res.status(200).send(`Passageiro com nome ${nome} atualizado com sucesso.`);
-                return;
+                } else if (nome_antigo && nome) {
+                    await NomePassageiroAtt.atualizarNome(nome, nome_antigo, res)
+                    res.status(200).send(`Passageiro com nome ${nome} atualizado com sucesso.`);
+                    return;
+                }
+                res.status(400).send('Nenhum dado válido para atualizar');
             }
-            res.status(400).send('Nenhum dado válido para atualizar');
+            catch (err) {
+                console.error('Erro ao atualizar o passageiro:', err);
+                res.status(500).send('Erro ao atualizar o passageiro.');
+            }
         }
-        catch (err) {
-            console.error('Erro ao atualizar o passageiro:', err);
-            res.status(500).send('Erro ao atualizar o passageiro.');
-        }
-
     },
 
 
